@@ -1,82 +1,33 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/auth-middleware");
-const { Likes, Posts } = require("../models");
+const { Likes } = require("../models");
 
-// 나의 좋아요 수, 좋아요 업체 확인하기
-router.get("/user/mylike", authMiddleware, async (req, res) => {
-  let offset = 0;
-
-  const { userId } = req.session.user;
-  const page = req.query.page ?? 1;
-
-  const myLikescount = await Likes.count({ where: { UserId: userId } });
-
-  if (page > 1) {
-    offset = 20 * (page - 1);
-  }
-
-  console.log(offset);
-
-  const result = {
-    page: {
-      present: page,
-      max: Math.ceil(page / 10) * 10,
-      min: Math.ceil(page / 10) * 10 - 9,
-      maxPageCount: Math.ceil(myLikescount / 20),
-    },
-    data: {
-      list: await Posts.findAll({
-        include: [{ model: Likes, as: "Likes", where: { UserId: userId } }],
-        limit: 20,
-        offset: offset,
-      }),
-      count: myLikescount,
-    },
-  };
-
-  res.status(201).json(result);
-});
-
-router.get("/detail/:placeId", authMiddleware, async (req, res) => {
-  try {
-    const { placeId } = req.params;
-    const { userId } = req.session.user;
-    const like = await Likes.findOne({
-      where: { UserId: userId, PlaceId: +placeId },
-    });
-    console.log(like);
-    res.status(200).json(like);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "조회에 실패했습니다." });
-  }
-});
-
-// 좋아요 수 확인하기
-router.get("/:placeId", async (req, res) => {
-  const likes = await Likes.count({
-    where: { PlaceId: placeId },
+//좋아요 조회
+router.get("/posts/:postId/like", async (req, res) => {
+  const likes = await Likes.findAll({
+    attributes: ["likeId", "PostId", "UserId", "createdAt", "updatedAt"],
+    order: [["createdAt", "DESC"]], // 내림차순 정렬
   });
 
   return res.status(200).json({ data: likes });
 });
 
 //좋아요 만들기
-router.post("/:placeId", authMiddleware, async (req, res) => {
-  const { userId } = req.session.user;
-  const { placeId } = req.params;
+router.post("/posts/:postId/like", authMiddleware, async (req, res) => {
+  const { userId } = res.locals.user;
+  const { postId } = req.params;
 
   try {
     const existingLike = await Likes.findOne({
-      where: { UserId: userId, PlaceId: +placeId },
+      where: { UserId: userId, PostId: postId },
     });
 
     if (existingLike) {
       await Likes.destroy({
         where: {
           UserId: userId,
-          PlaceId: +placeId,
+          PostId: postId,
         },
       });
       res.status(200).json({
@@ -85,7 +36,7 @@ router.post("/:placeId", authMiddleware, async (req, res) => {
     } else {
       await Likes.create({
         UserId: userId,
-        PlaceId: +placeId,
+        PostId: postId,
       });
       res.status(200).json({
         liked: true,

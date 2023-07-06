@@ -36,11 +36,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.INTEGER,
       },
-      nickname: {
-        allowNull: false,
-        type: DataTypes.STRING,
-        unique: true,
-      },
       title: {
         allowNull: false,
         type: DataTypes.STRING,

@@ -7,14 +7,7 @@ const authMiddleware = require("../middlewares/auth-middleware");
 // 게시글 전체 목록 조회
 router.get("/posts", async (req, res) => {
   const posts = await Posts.findAll({
-    attributes: [
-      "postId",
-      "userId",
-      "nickname",
-      "title",
-      "createdAt",
-      "updatedAt",
-    ],
+    attributes: ["postId", "userId", "title", "createdAt", "updatedAt"],
     order: [["createdAt", "DESC"]], // 내림차순 정렬
   });
 
@@ -28,7 +21,6 @@ router.get("/posts/:postId", async (req, res) => {
     attributes: [
       "postId",
       "userId",
-      "nickname",
       "title",
       "content",
       "createdAt",
