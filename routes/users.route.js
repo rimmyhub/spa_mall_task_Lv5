@@ -19,18 +19,16 @@ router.post("/signup", async (req, res) => {
   const nicknameRegex = /^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣]{3,}$/;
   if (!nicknameRegex.test(nickname)) {
     res.status(412).json({
-      errorMessage:
-        "닉네임의 형식이 일치하지 않습니다.",
+      errorMessage: "닉네임의 형식이 일치하지 않습니다.",
     });
     return;
   }
 
   // 비밀번호 유효성 검사 : 비밀번호는 최소 4자 이상이어야 하며, 닉네임과 같은 값이 포함될 수 없음, 비밀번호에 숫자가 최소한 하나 이상 포함
-  const passwordRegex = new RegExp(`^(?!.*${nickname})(?=.*\\d).{4,}$`)
+  const passwordRegex = new RegExp(`^(?!.*${nickname})(?=.*\\d).{4,}$`);
   if (!passwordRegex.test(password)) {
     res.status(412).json({
-      errorMessage:
-        "패스워드 형식이 일치하지 않습니다.",
+      errorMessage: "패스워드 형식이 일치하지 않습니다.",
     });
     return;
   }
@@ -51,7 +49,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { nickname, password } = req.body;
   const user = await Users.findOne({ where: { nickname } });
-  
+
   // user가 존재하지 않거나 user를 찾았지만, user의 비밀번호와 입력한 비밀번호가 다를때
   if (!user || password !== user.password) {
     res.status(412).json({

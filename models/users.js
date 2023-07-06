@@ -1,5 +1,5 @@
-'use strict';
-const { Model } = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
     /**
@@ -9,11 +9,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-
-      // 1. Users 모델에서
-      this.hasMany(models.Posts, { // 2. Posts 모델에게 1:N 관계 설정
-        sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
-        foreignKey: 'UserId', // 4. Posts 모델의 UserId 컬럼과 연결
+      this.hasMany(models.Posts, {
+        sourceKey: "userId",
+        foreignKey: "UserId",
+      });
+      this.hasMany(models.Comments, {
+        sourceKey: "userId",
+        foreignKey: "UserId",
+      });
+      this.hasMany(models.Likes, {
+        sourceKey: "userId",
+        foreignKey: "UserId",
       });
     }
   }
@@ -27,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       nickname: {
-        allowNull: false, 
+        allowNull: false,
         type: DataTypes.STRING,
         unique: true,
       },
@@ -36,23 +42,23 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       confirm: {
-        allowNull: false, 
+        allowNull: false,
         type: DataTypes.STRING,
       },
       createdAt: {
-        allowNull: false, 
+        allowNull: false,
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW, //models는 fn("now")라고 굳이 안써도 됨
+        defaultValue: DataTypes.NOW,
       },
       updatedAt: {
         allowNull: false,
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW, //models는 fn("now")라고 굳이 안써도 됨
+        defaultValue: DataTypes.NOW,
       },
     },
     {
       sequelize,
-      modelName: 'Users',
+      modelName: "Users",
     }
   );
   return Users;

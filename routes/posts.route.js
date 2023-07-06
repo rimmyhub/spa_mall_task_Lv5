@@ -1,8 +1,8 @@
 const express = require("express");
+const router = express.Router();
 const { Op } = require("sequelize");
 const { Posts } = require("../models");
 const authMiddleware = require("../middlewares/auth-middleware");
-const router = express.Router();
 
 // 게시글 전체 목록 조회
 router.get("/posts", async (req, res) => {
@@ -53,7 +53,9 @@ router.post("/posts", authMiddleware, async (req, res) => {
     content,
   });
 
-  return res.status(201).json({ message: "게시글 작성에 성공하였습니다.", data: post });
+  return res
+    .status(201)
+    .json({ message: "게시글 작성에 성공하였습니다.", data: post });
 });
 
 // 게시글 수정
