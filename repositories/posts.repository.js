@@ -1,11 +1,27 @@
 const { Posts } = require("../models");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
+
+const sequelize = new Sequelize({
+  dialect: "sqlite",
+});
 
 class PostsRepository {
   findAllPost = async () => {
     return await Posts.findAll({
-      attributes: ["postId", "userId", "title", "createdAt", "updatedAt"],
-      order: [["createdAt", "DESC"]], // 내림차순 정렬
+      attributes: [
+        "postId",
+        "userId",
+        "title",
+        "createdAt",
+        "updatedAt",
+        [
+          sequelize.literal(
+            "(SELECT COUNT(*) FROM Likes WHERE Likes.PostId = Posts.postId)"
+          ),
+          "likeCount",
+        ],
+      ],
+      order: [["likeCount", "DESC"]],
     });
   };
 
